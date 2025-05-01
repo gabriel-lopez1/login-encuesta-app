@@ -7,12 +7,11 @@ import logo from '../assets/logo.png'; // Asegúrate de que la ruta sea correcta
 const LoginForm = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // ✅ Mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [formErrorCount, setFormErrorCount] = useState(0);
 
-  // ✅ Validación de campos
   const validate = () => {
     const newErrors = {};
     if (!user.trim()) {
@@ -32,7 +31,7 @@ const LoginForm = () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setFormErrorCount(prev => prev + 1); // Activa animación shake
+      setFormErrorCount((prev) => prev + 1);
     } else {
       setErrors({});
       setLoading(true);
@@ -45,14 +44,15 @@ const LoginForm = () => {
 
   return (
     <motion.div
-      className="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light"
+      className="container-fluid min-vh-100 overflow-auto bg-light d-flex align-items-center justify-content-center"
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
       <div className="row w-100">
-        <div className="col-md-5 d-flex flex-column justify-content-center align-items-center p-5">
-          <img src={logo} alt="logo" className="mb-4" style={{ maxWidth: 250 }} />
+        {/* Formulario */}
+        <div className="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center p-3 p-md-5">
+          <img src={logo} alt="logo" className="mb-4" style={{ maxWidth: 200 }} />
 
           <motion.div
             key={formErrorCount}
@@ -64,7 +64,7 @@ const LoginForm = () => {
             <h4 className="mb-4">Iniciar sesión</h4>
 
             <form onSubmit={handleSubmit}>
-              {/* ✅ Campo de email con icono e error animado */}
+              {/* Campo de email */}
               <div className="mb-3">
                 <label className="form-label">Correo electrónico:</label>
                 <div className="input-group">
@@ -93,7 +93,7 @@ const LoginForm = () => {
                 </AnimatePresence>
               </div>
 
-              {/* ✅ Campo de contraseña con íconos e error animado */}
+              {/* Campo de contraseña */}
               <div className="mb-3">
                 <label className="form-label">Contraseña:</label>
                 <div className="input-group">
@@ -128,11 +128,8 @@ const LoginForm = () => {
                   )}
                 </AnimatePresence>
               </div>
-                  {/* Ocultado por si se requiere mas adelante */}
-              {/*<div className="mb-3 text-end">
-                <a href="#" className="text-muted small">¿Olvidaste tu contraseña?</a>
-              </div>*/}
 
+              {/* Botón */}
               {loading ? (
                 <button className="btn btn-primary w-100" disabled>
                   <span className="spinner-border spinner-border-sm me-2"></span>
@@ -144,11 +141,13 @@ const LoginForm = () => {
             </form>
           </motion.div>
 
+          {/* Footer */}
           <footer className="mt-4 text-center text-muted small">
             &copy; {new Date().getFullYear()} JMM Asesores. Todos los Derechos Reservados.
           </footer>
         </div>
 
+        {/* Imagen lateral solo en pantallas medianas o mayores */}
         <div className="col-md-7 d-none d-md-block p-0">
           <div
             className="h-100"
