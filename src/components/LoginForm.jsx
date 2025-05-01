@@ -1,19 +1,29 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import logo from '../assets/logo.png';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, User, Lock } from 'lucide-react';
+import logo from '../assets/logo.png'; // Asegúrate de que la ruta sea correcta
 
 const LoginForm = () => {
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // ✅ Mostrar/ocultar contraseña
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [formErrorCount, setFormErrorCount] = useState(0);
 
+  // ✅ Validación de campos
   const validate = () => {
     const newErrors = {};
-    if (!user) newErrors.user = 'El usuario es obligatorio.';
-    if (!password) newErrors.password = 'La contraseña es obligatoria.';
+    if (!user.trim()) {
+      newErrors.user = 'El correo es obligatorio.';
+    } else if (!/\S+@\S+\.\S+/.test(user)) {
+      newErrors.user = 'Ingresa un correo electrónico válido.';
+    }
+
+    if (!password.trim()) {
+      newErrors.password = 'La contraseña es obligatoria.';
+    }
     return newErrors;
   };
 
@@ -22,7 +32,7 @@ const LoginForm = () => {
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setFormErrorCount(prev => prev + 1); // Disparar shake
+      setFormErrorCount(prev => prev + 1); // Activa animación shake
     } else {
       setErrors({});
       setLoading(true);
@@ -43,38 +53,86 @@ const LoginForm = () => {
       <div className="row w-100">
         <div className="col-md-5 d-flex flex-column justify-content-center align-items-center p-5">
           <img src={logo} alt="logo" className="mb-4" style={{ maxWidth: 250 }} />
+
           <motion.div
             key={formErrorCount}
             className="card shadow rounded p-4 w-100"
             style={{ maxWidth: 400 }}
-            animate={errors && Object.keys(errors).length > 0 ? { x: [0, -10, 10, -10, 0] } : {}}
+            animate={Object.keys(errors).length > 0 ? { x: [0, -10, 10, -10, 0] } : {}}
             transition={{ duration: 0.4 }}
           >
             <h4 className="mb-4">Iniciar sesión</h4>
+
             <form onSubmit={handleSubmit}>
+              {/* ✅ Campo de email con icono e error animado */}
               <div className="mb-3">
-                <label className="form-label">Usuario:</label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.user ? 'is-invalid' : ''}`}
-                  value={user}
-                  onChange={(e) => setUser(e.target.value)}
-                />
-                {errors.user && <div className="invalid-feedback">{errors.user}</div>}
+                <label className="form-label">Correo electrónico:</label>
+                <div className="input-group">
+                  <span className="input-group-text bg-primary bg-opacity-10 border-end-0">
+                    <User size={16} className="text-primary" />
+                  </span>
+                  <input
+                    type="email"
+                    className={`form-control ${errors.user ? 'is-invalid' : ''}`}
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                    placeholder="correo@ejemplo.com"
+                  />
+                </div>
+                <AnimatePresence>
+                  {errors.user && (
+                    <motion.div
+                      className="text-danger small mt-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                    >
+                      {errors.user}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
+
+              {/* ✅ Campo de contraseña con íconos e error animado */}
               <div className="mb-3">
                 <label className="form-label">Contraseña:</label>
-                <input
-                  type="password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                <div className="input-group">
+                  <span className="input-group-text bg-primary bg-opacity-10 border-end-0">
+                    <Lock size={16} className="text-primary" />
+                  </span>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Ingresa tu contraseña"
+                  />
+                  <span
+                    className="input-group-text bg-primary bg-opacity-10 border-start-0"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={16} className="text-primary" /> : <Eye size={16} className="text-primary" />}
+                  </span>
+                </div>
+                <AnimatePresence>
+                  {errors.password && (
+                    <motion.div
+                      className="text-danger small mt-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                    >
+                      {errors.password}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <div className="mb-3 text-end">
+                  {/* Ocultado por si se requiere mas adelante */}
+              {/*<div className="mb-3 text-end">
                 <a href="#" className="text-muted small">¿Olvidaste tu contraseña?</a>
-              </div>
+              </div>*/}
+
               {loading ? (
                 <button className="btn btn-primary w-100" disabled>
                   <span className="spinner-border spinner-border-sm me-2"></span>
@@ -85,11 +143,12 @@ const LoginForm = () => {
               )}
             </form>
           </motion.div>
-          {/* FOOTER */}
-  <footer className="mt-4 text-center text-muted small">
-    &copy; {new Date().getFullYear()} JMM Asesores. Todos los Derechos Reservados.
-  </footer>
+
+          <footer className="mt-4 text-center text-muted small">
+            &copy; {new Date().getFullYear()} JMM Asesores. Todos los Derechos Reservados.
+          </footer>
         </div>
+
         <div className="col-md-7 d-none d-md-block p-0">
           <div
             className="h-100"
